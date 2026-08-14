@@ -1,0 +1,27 @@
+{
+  "scripts": {
+    "lint": "eslint .",
+    "format-check": "prettier --check ."
+  },
+  "name": "calliope",
+  "description": "Einfache Webanwendung zur Steuerung eines Calliope mini per Bluetooth Low Energy.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NiklasGehlen/Calliope.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NiklasGehlen/Calliope/issues"
+  },
+  "homepage": "https://github.com/NiklasGehlen/Calliope#readme",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.1",
+    "globals": "^17.11.0",
+    "prettier": "^3.9.6"
+  }
+}
