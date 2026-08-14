@@ -12,13 +12,16 @@ source ./venv/bin/activate
 
 flask installieren:
 pip install flask
-pip install bleak
+
 
 jetz dürfen wir das programm ausführen:
 python3 app.py
 
 und es auf port 5000 uns anschauen ! 
 http://localhost:5000
+
+
+alternativ falls keine python umgebung vorhanden ist in der index.html die js und css datei normal einbinden und via .html testen, vorm pushen bitte zurückändern!
 
 
 todo: schöne doku
