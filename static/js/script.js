@@ -14,7 +14,7 @@ const LIFTER_MAX = 110;
 
 // Schrittweite fuer die Pfeile (in Grad)
 const LIFTER_STEP = 5;
-
+let x = 
 // Fahrbuttons: welcher Button sendet welchen Befehl
 const driveMap = {
     upBtn:    { press: "UP",    release: "up"    },
