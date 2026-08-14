@@ -1,7 +1,6 @@
 {
   "scripts": {
     "lint": "eslint .",
-    "format-check": "prettier --check ."
   },
   "name": "calliope",
   "description": "Einfache Webanwendung zur Steuerung eines Calliope mini per Bluetooth Low Energy.",
