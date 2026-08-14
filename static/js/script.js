@@ -1,6 +1,4 @@
-// ==========================================================
 // Elemente & Konstanten
-// ==========================================================
 
 let rxCharacteristic = null;
 
@@ -23,11 +21,8 @@ const driveMap = {
 };
 
 
-// ==========================================================
 // Bluetooth: verbinden & senden
-// ==========================================================
 
-// Bluetooth-Verbindung aufbauen
 async function connectBluetooth() {
 
     try {
@@ -91,11 +86,10 @@ document
     .addEventListener("click", connectBluetooth);
 
 
-// ==========================================================
-// Fahren (Fahrbuttons)
-// ==========================================================
 
 // Fahren starten (Button optisch aktiv, "press" senden)
+// das active tag ist einfach dafür da das während der knopf gedürckt wird der button kleiner bleibt
+// er holt sich aus der drive map den passenden befehl
 function driveStart(id) {
     document.getElementById(id).classList.add("active");
     send(driveMap[id].press);
@@ -121,10 +115,7 @@ for (const id of Object.keys(driveMap)) {
     bindDriveButton(id);
 }
 
-
-// ==========================================================
 // Selbstfahren (Umschalter)
-// ==========================================================
 
 let selfDriveOn = false;
 
@@ -145,10 +136,6 @@ selfDriveBtn.addEventListener("click", () => {
     }
 });
 
-
-// ==========================================================
-// Geschwindigkeit (Schildkroete / Hase)
-// ==========================================================
 
 // Kurzes optisches Feedback fuer einen Button geben
 function flashButton(id) {
@@ -172,9 +159,7 @@ document
     });
 
 
-// ==========================================================
 // Heber (Slider & Pfeile)
-// ==========================================================
 
 // Zahl auf 3 Stellen mit fuehrenden Nullen bringen (z. B. 90 -> "090")
 function pad3(value) {
