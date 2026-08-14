@@ -78,6 +78,10 @@ button {
     font-weight: bold;
 
     transition: .15s;
+
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
 }
 
 button:hover {
