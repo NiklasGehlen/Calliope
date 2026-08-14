@@ -1,0 +1,283 @@
+:root {
+    --primary: #6750A4;
+    --surface: #1e1e1e;
+    --card: #2b2b2b;
+    --text: #f5f5f5;
+    --success: #4CAF50;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+
+    /* Fallback-Farbe, falls das Bild nicht laedt */
+    background-color: var(--surface);
+
+    /* Wallpaper: fuellt den ganzen Hintergrund, ohne sich zu verzerren */
+    background-image: url("../img/wallpaper.png");
+    background-size: cover;         /* deckt alles ab, behaelt Seitenverhaeltnis */
+    background-position: center;    /* mittig ausgerichtet */
+    background-repeat: no-repeat;   /* nicht kacheln */
+    background-attachment: fixed;   /* bleibt beim Scrollen ruhig */
+
+    color: var(--text);
+    font-family: Arial, sans-serif;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 100vh;
+}
+
+.card {
+    width: 420px;
+    max-width: calc(100vw - 20px);
+
+    /* leicht durchscheinend, damit das Wallpaper dahinter wirkt */
+    background: rgba(43, 43, 43, .85);
+    backdrop-filter: blur(6px);
+
+    border-radius: 24px;
+    padding: 24px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+
+h1 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.status {
+    padding: 12px;
+    margin-bottom: 20px;
+
+    border-radius: 12px;
+
+    background: #383838;
+
+    text-align: center;
+}
+
+button {
+    border: none;
+    background: var(--primary);
+    color: white;
+
+    border-radius: 16px;
+
+    cursor: pointer;
+
+    padding: 14px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    transition: .15s;
+}
+
+button:hover {
+    filter: brightness(1.1);
+}
+
+button.active {
+    transform: scale(0.95);
+}
+
+#connectBtn {
+    width: 100%;
+}
+
+/* ---- Selbstfahren-Umschalter ---- */
+#selfDriveBtn {
+    width: 100%;
+    margin-top: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    /* AUS-Zustand: neutrales Grau */
+    background: #555;
+}
+
+/* kleiner Status-Punkt links im Button */
+#selfDriveBtn::before {
+    content: "";
+
+    width: 14px;
+    height: 14px;
+
+    border-radius: 50%;
+
+    background: #999;
+
+    transition: .15s;
+}
+
+/* AN-Zustand: gruen eingefaerbt */
+#selfDriveBtn.on {
+    background: var(--success);
+}
+
+#selfDriveBtn.on::before {
+    background: #fff;
+
+    box-shadow: 0 0 8px rgba(255,255,255,.8);
+}
+
+/* ---- Geschwindigkeit (Schildkroete / Hase) ---- */
+.speed {
+    margin-top: 16px;
+
+    display: grid;
+
+    gap: 10px;
+
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.speed-btn {
+    font-size: 32px;
+
+    padding: 12px;
+}
+
+.pad {
+    margin-top: 20px;
+
+    display: grid;
+
+    gap: 10px;
+
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 100px);
+}
+
+.direction {
+    font-size: 48px;
+}
+
+#upBtn {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+#leftBtn {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#rightBtn {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+#downBtn {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+/* ---- Heber-Steuerung ---- */
+.lifter {
+    margin-top: 24px;
+
+    background: #383838;
+
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.lifter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 12px;
+
+    font-weight: bold;
+}
+
+#lifterValue {
+    color: var(--success);
+}
+
+.lifter-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.lifter-arrow {
+    flex: 0 0 auto;
+
+    width: 56px;
+    height: 56px;
+
+    padding: 0;
+
+    font-size: 28px;
+
+    border-radius: 14px;
+}
+
+.lifter-slider {
+    flex: 1 1 auto;
+
+    -webkit-appearance: none;
+    appearance: none;
+
+    height: 10px;
+
+    border-radius: 8px;
+
+    background: #555;
+
+    outline: none;
+
+    cursor: pointer;
+}
+
+.lifter-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 26px;
+    height: 26px;
+
+    border-radius: 50%;
+
+    background: var(--primary);
+
+    cursor: pointer;
+
+    border: 3px solid #fff;
+}
+
+.lifter-slider::-moz-range-thumb {
+    width: 26px;
+    height: 26px;
+
+    border-radius: 50%;
+
+    background: var(--primary);
+
+    cursor: pointer;
+
+    border: 3px solid #fff;
+}
+
+.hint {
+    margin-top: 18px;
+
+    font-size: 13px;
+
+    text-align: center;
+
+    color: #d0d0d0;
+}
