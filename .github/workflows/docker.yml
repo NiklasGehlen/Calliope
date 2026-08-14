@@ -2,11 +2,11 @@ name: Build and Push Docker Image
 
 on:
   push:
-    branches: [main]      # bei jedem Push auf main
+    branches: [main] # bei jedem Push auf main
 
 permissions:
   contents: read
-  packages: write         # noetig, damit GITHUB_TOKEN nach GHCR pushen darf
+  packages: write # noetig, damit GITHUB_TOKEN nach GHCR pushen darf
 
 jobs:
   build:
@@ -30,6 +30,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/niklasgehlen/calliope:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
