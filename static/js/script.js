@@ -30,6 +30,7 @@ const driveMap = {
 
 // Bluetooth-Verbindung aufbauen
 async function connectBluetooth() {
+  let x = 
 
     try {
 
