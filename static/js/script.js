@@ -29,7 +29,7 @@ async function connectBluetooth() {
 
         const serviceUuid = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
 
-        statusBox.textContent = "Verbinde...oder?";
+        statusBox.textContent = "Verbinde...";
 
         // Geraet auswaehlen
         const device = await navigator.bluetooth.requestDevice({
