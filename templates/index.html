@@ -1,62 +1,93 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calliope Remote</title>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
+
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
 </head>
+
 <body>
+
     <div class="card">
+
         <h1>Calliope Remote</h1>
+
         <div id="status" class="status">
             Nicht verbunden
         </div>
+
         <button id="connectBtn">
             Bluetooth verbinden
         </button>
-        <button id="selfDriveBtn">
-            Selbstfahren: AUS
-        </button>
+
         <div class="speed">
-            <button id="turtleBtn" class="speed-btn" title="Langsam (Schildkroete)">
+
+            <button id="turtleBtn" class="speed-btn disabled" title="Langsam (Schildkroete)">
                 &#128034;
             </button>
-            <button id="rabbitBtn" class="speed-btn" title="Schnell (Hase)">
+
+            <button id="rabbitBtn" class="speed-btn disabled" title="Schnell (Hase)">
                 &#128007;
             </button>
+
         </div>
+
         <div class="pad">
-            <button id="upBtn" class="direction">
+
+            <button id="upBtn" class="direction disabled">
                 &#8593;
             </button>
-            <button id="leftBtn" class="direction">
+
+            <button id="leftBtn" class="direction disabled">
                 &#8592;
             </button>
-            <button id="rightBtn" class="direction">
+
+            <button id="rightBtn" class="direction disabled">
                 &#8594;
             </button>
-            <button id="downBtn" class="direction">
+
+            <button id="downBtn" class="direction disabled">
                 &#8595;
             </button>
+
         </div>
+
         <div class="lifter">
+
             <div class="lifter-header">
                 <span>Heber</span>
                 <span id="lifterValue">0&deg;</span>
             </div>
+
             <div class="lifter-controls">
-                <button id="lifterDownBtn" class="lifter-arrow" title="Heber runter">
+
+                <button id="lifterDownBtn" class="lifter-arrow disabled" title="Heber runter (Pfeil runter)">
                     &#8595;
                 </button>
-                <input id="lifterSlider" class="lifter-slider" type="range" min="0" max="110" step="1"
+
+                <input id="lifterSlider" class="lifter-slider disabled" type="range" min="0" max="110" step="5"
                     value="0">
-                <button id="lifterUpBtn" class="lifter-arrow" title="Heber hoch">
+
+                <button id="lifterUpBtn" class="lifter-arrow disabled" title="Heber hoch (Pfeil hoch)">
                     &#8593;
                 </button>
+
             </div>
+
         </div>
+
+        <div class="hint">
+            Steuerung per Tastatur: <b>W A S D</b> fahren &middot;
+            <b>Pfeil hoch/runter</b> Heber
+        </div>
+
     </div>
-    <script src="{{ url_for('static',filename='js/script.js') }}"></script>
+
+    <script src="../static/js/script.js"></script>
+
 </body>
+
 </html>
