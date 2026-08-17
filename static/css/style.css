@@ -10,18 +10,20 @@
     box-sizing: border-box;
 }
 
+html,
+body {
+    height: 100%;
+}
+
 body {
     margin: 0;
+    padding: 10px;
 
-    /* Fallback-Farbe, falls das Bild nicht laedt */
-    background-color: var(--surface);
-
-    /* Wallpaper: fuellt den ganzen Hintergrund, ohne sich zu verzerren */
-    background-image: url("../img/wallpaper.png");
-    background-size: cover;         /* deckt alles ab, behaelt Seitenverhaeltnis */
-    background-position: center;    /* mittig ausgerichtet */
-    background-repeat: no-repeat;   /* nicht kacheln */
-    background-attachment: fixed;   /* bleibt beim Scrollen ruhig */
+    background: var(--surface);
+    background-image: url("../img/wp_laptop_1920x1200.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
     color: var(--text);
     font-family: Arial, sans-serif;
@@ -30,31 +32,43 @@ body {
     justify-content: center;
     align-items: center;
 
-    min-height: 100vh;
+    /* Fill the screen exactly, never scroll */
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+@media (max-width: 1599px) {
+    body {
+        background-image: url("../img/wp_laptop_1920x1080.png");
+    }
 }
 
 .card {
     width: 420px;
-    max-width: calc(100vw - 20px);
+    max-width: 100%;
+    max-height: 100%;
 
-    /* leicht durchscheinend, damit das Wallpaper dahinter wirkt */
-    background: rgba(43, 43, 43, .85);
-    backdrop-filter: blur(6px);
+    background: var(--card);
 
     border-radius: 24px;
-    padding: 24px;
+    padding: clamp(14px, 2.2vh, 24px);
 
-    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .3);
+
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
     text-align: center;
-    margin-top: 0;
+    margin: 0 0 clamp(6px, 1.5vh, 16px);
+    font-size: clamp(20px, 3.4vh, 32px);
 }
 
 .status {
-    padding: 12px;
-    margin-bottom: 20px;
+    padding: clamp(8px, 1.4vh, 12px);
+    margin-bottom: clamp(10px, 2vh, 20px);
 
     border-radius: 12px;
 
@@ -72,12 +86,12 @@ button {
 
     cursor: pointer;
 
-    padding: 14px;
+    padding: clamp(9px, 1.5vh, 14px);
 
-    font-size: 16px;
+    font-size: clamp(14px, 2vh, 16px);
     font-weight: bold;
 
-    transition: .15s;
+    transition: .1s;
 
     user-select: none;
     -webkit-user-select: none;
@@ -96,75 +110,36 @@ button.active {
     width: 100%;
 }
 
-/* ---- Selbstfahren-Umschalter ---- */
-#selfDriveBtn {
-    width: 100%;
-    margin-top: 16px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-
-    /* AUS-Zustand: neutrales Grau */
-    background: #555;
-}
-
-/* kleiner Status-Punkt links im Button */
-#selfDriveBtn::before {
-    content: "";
-
-    width: 14px;
-    height: 14px;
-
-    border-radius: 50%;
-
-    background: #999;
-
-    transition: .15s;
-}
-
-/* AN-Zustand: gruen eingefaerbt */
-#selfDriveBtn.on {
-    background: var(--success);
-}
-
-#selfDriveBtn.on::before {
-    background: #fff;
-
-    box-shadow: 0 0 8px rgba(255,255,255,.8);
-}
-
 /* ---- Geschwindigkeit (Schildkroete / Hase) ---- */
 .speed {
-    margin-top: 16px;
+    margin-top: clamp(8px, 1.5vh, 16px);
 
     display: grid;
 
-    gap: 10px;
+    gap: clamp(6px, 1.2vh, 10px);
 
     grid-template-columns: repeat(2, 1fr);
 }
 
 .speed-btn {
-    font-size: 32px;
+    font-size: clamp(22px, 4vh, 32px);
 
-    padding: 12px;
+    padding: clamp(6px, 1.2vh, 12px);
 }
 
 .pad {
-    margin-top: 20px;
+    margin-top: clamp(10px, 1.8vh, 20px);
 
     display: grid;
 
-    gap: 10px;
+    gap: clamp(6px, 1.2vh, 10px);
 
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 100px);
+    grid-template-rows: repeat(3, clamp(52px, 11vh, 100px));
 }
 
 .direction {
-    font-size: 48px;
+    font-size: clamp(28px, 6vh, 48px);
 }
 
 #upBtn {
@@ -189,12 +164,12 @@ button.active {
 
 /* ---- Heber-Steuerung ---- */
 .lifter {
-    margin-top: 24px;
+    margin-top: clamp(10px, 2vh, 24px);
 
     background: #383838;
 
     border-radius: 16px;
-    padding: 16px;
+    padding: clamp(10px, 1.8vh, 16px);
 }
 
 .lifter-header {
@@ -202,7 +177,7 @@ button.active {
     justify-content: space-between;
     align-items: center;
 
-    margin-bottom: 12px;
+    margin-bottom: clamp(6px, 1.2vh, 12px);
 
     font-weight: bold;
 }
@@ -220,12 +195,12 @@ button.active {
 .lifter-arrow {
     flex: 0 0 auto;
 
-    width: 56px;
-    height: 56px;
+    width: clamp(44px, 7vh, 56px);
+    height: clamp(44px, 7vh, 56px);
 
     padding: 0;
 
-    font-size: 28px;
+    font-size: clamp(22px, 3.4vh, 28px);
 
     border-radius: 14px;
 }
@@ -277,11 +252,16 @@ button.active {
 }
 
 .hint {
-    margin-top: 18px;
+    margin-top: clamp(8px, 1.5vh, 18px);
 
-    font-size: 13px;
+    font-size: clamp(11px, 1.6vh, 13px);
 
     text-align: center;
 
-    color: #d0d0d0;
+    color: #b0b0b0;
+}
+
+.disabled {
+    opacity: .4;
+    pointer-events: none;
 }
