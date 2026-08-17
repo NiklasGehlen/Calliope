@@ -10,14 +10,11 @@
     box-sizing: border-box;
 }
 
-
 body {
     margin: 0;
 
-
     /* Fallback-Farbe, falls das Bild nicht laedt */
     background-color: var(--surface);
-
 
     /* Wallpaper: fuellt den ganzen Hintergrund, ohne sich zu verzerren */
     background-image: url("../img/wallpaper.png");
@@ -33,45 +30,37 @@ body {
     justify-content: center;
     align-items: center;
 
-    min-height: 100vh;
-
-
-
-
-
-
-
-
-
+    min-height: 100dvh;
+    padding: 10px;
 }
 
 .card {
-    width: 420px;
-    max-width: calc(100vw - 20px);
-
+    width: min(420px, 100%);
+    height: min(800px, calc(100dvh - 20px));
 
     /* leicht durchscheinend, damit das Wallpaper dahinter wirkt */
     background: rgba(43, 43, 43, .85);
     backdrop-filter: blur(6px);
 
     border-radius: 24px;
-    padding: 24px;
+    padding: clamp(12px, 2vw, 24px);
 
     box-shadow: 0 10px 30px rgba(0,0,0,.4);
 
-
-
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
     text-align: center;
     margin-top: 0;
-
+    margin-bottom: clamp(10px, 2vh, 20px);
+    font-size: clamp(1.3rem, 4vw, 2rem);
 }
 
 .status {
-    padding: 12px;
-    margin-bottom: 20px;
+    padding: clamp(8px, 1.5vw, 12px);
+    margin-bottom: clamp(12px, 2vh, 20px);
 
     border-radius: 12px;
 
@@ -89,9 +78,9 @@ button {
 
     cursor: pointer;
 
-    padding: 14px;
+    padding: clamp(10px, 2vw, 14px);
 
-    font-size: 16px;
+    font-size: clamp(14px, 3vw, 16px);
     font-weight: bold;
 
     transition: .15s;
@@ -116,7 +105,7 @@ button.active {
 /* ---- Selbstfahren-Umschalter ---- */
 #selfDriveBtn {
     width: 100%;
-    margin-top: 16px;
+    margin-top: clamp(10px, 1.5vh, 16px);
 
     display: flex;
     align-items: center;
@@ -154,7 +143,7 @@ button.active {
 
 /* ---- Geschwindigkeit (Schildkroete / Hase) ---- */
 .speed {
-    margin-top: 16px;
+    margin-top: clamp(10px, 1.5vh, 16px);
 
     display: grid;
 
@@ -164,24 +153,27 @@ button.active {
 }
 
 .speed-btn {
-    font-size: 32px;
-
-    padding: 12px;
+    font-size: clamp(20px, 5vw, 32px);
+    padding: clamp(8px, 2vw, 12px);
 }
 
 .pad {
-    margin-top: 20px;
+    margin-top: clamp(12px, 2vh, 20px);
+
+    /* waechst dynamisch mit und fuellt den freien Platz */
+    flex: 1;
 
     display: grid;
 
-    gap: 10px;
+    gap: clamp(6px, 1vw, 10px);
 
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 100px);
+    grid-template-rows: repeat(3, 1fr);
 }
 
 .direction {
-    font-size: 48px;
+    font-size: clamp(24px, 6vw, 48px);
+    padding: 0;
 }
 
 #upBtn {
@@ -206,12 +198,12 @@ button.active {
 
 /* ---- Heber-Steuerung ---- */
 .lifter {
-    margin-top: 24px;
+    margin-top: clamp(14px, 2vh, 24px);
 
     background: #383838;
 
     border-radius: 16px;
-    padding: 16px;
+    padding: clamp(10px, 2vw, 16px);
 }
 
 .lifter-header {
@@ -237,12 +229,12 @@ button.active {
 .lifter-arrow {
     flex: 0 0 auto;
 
-    width: 56px;
-    height: 56px;
+    width: clamp(44px, 10vw, 56px);
+    height: clamp(44px, 10vw, 56px);
 
     padding: 0;
 
-    font-size: 28px;
+    font-size: clamp(22px, 5vw, 28px);
 
     border-radius: 14px;
 }
@@ -294,10 +286,36 @@ button.active {
 }
 
 .hint {
-    margin-top: 18px;
+    margin-top: clamp(10px, 1.5vh, 18px);
 
     font-size: 13px;
 
     text-align: center;
 
     color: #d0d0d0;
+}
+
+/* ---- Kleine Hoehen: noch kompakter, damit nichts scrollt ---- */
+@media (max-height: 800px) {
+    h1 {
+        margin-bottom: 8px;
+        font-size: 1.3rem;
+    }
+
+    .status {
+        margin-bottom: 10px;
+    }
+
+    .lifter {
+        margin-top: 12px;
+        padding: 10px;
+    }
+
+    .lifter-header {
+        margin-bottom: 8px;
+    }
+
+    .hint {
+        margin-top: 10px;
+    }
+}
