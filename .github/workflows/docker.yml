@@ -6,6 +6,10 @@ on:
     types:
       - completed
 
+concurrency:
+  group: build-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   packages: write # noetig, damit GITHUB_TOKEN nach GHCR pushen darf
