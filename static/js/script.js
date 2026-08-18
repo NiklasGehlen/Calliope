@@ -1,6 +1,9 @@
 // Elemente & Konstanten
-
 let rxCharacteristic = null;
+let txCharacteristic = null;
+
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 const statusBox = document.getElementById("status");
 
@@ -29,34 +32,34 @@ async function connectBluetooth() {
 
         const serviceUuid = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
 
+        const rxUuid = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // Webseite sendet an Calliope
+        const txUuid = "6e400003-b5a3-f393-e0a9-e50e24dcca9e"; // Calliope sendet an Webseite
+
         statusBox.textContent = "Verbinde...";
 
-        // Geraet auswaehlen
         const device = await navigator.bluetooth.requestDevice({
             filters: [{
-              namePrefix: "Calliope",
+                namePrefix: "Calliope"
             }],
             optionalServices: [serviceUuid]
         });
 
-        // Verbindung herstellen und UART-Service holen
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(serviceUuid);
 
-        // Erste beschreibbare Characteristic suchen
-        const characteristics = await service.getCharacteristics();
+        rxCharacteristic = await service.getCharacteristic(rxUuid);
+        txCharacteristic = await service.getCharacteristic(txUuid);
 
-        rxCharacteristic = characteristics.find(
-            characteristic =>
-                characteristic.properties.write ||
-                characteristic.properties.writeWithoutResponse
+        await txCharacteristic.startNotifications();
+
+        txCharacteristic.addEventListener(
+            "characteristicvaluechanged",
+            handleReceivedData
         );
 
-        if (!rxCharacteristic) {
-            throw new Error("Keine beschreibbare Characteristic gefunden");
-        }
-
         statusBox.textContent = "Verbunden";
+
+        await send("GETLIFTER");
 
     } catch (error) {
         console.error(error);
@@ -72,12 +75,34 @@ async function send(command) {
     }
 
     try {
-        const data = new TextEncoder().encode(command + "\n");
+        const data = encoder.encode(command + "\n");
         await rxCharacteristic.writeValueWithoutResponse(data);
 
     } catch (error) {
         console.error(error);
         statusBox.textContent = "Senden fehlgeschlagen";
+    }
+}
+
+function handleReceivedData(event) {
+
+    const text = decoder.decode(event.target.value).trim();
+
+    console.log("Vom Calliope empfangen:", text);
+
+    const messages = text.split("\n");
+
+    for (const message of messages) {
+
+        if (message.startsWith("LIFTER:")) {
+
+            const angleText = message.replace("LIFTER:", "");
+            const angle = Number(angleText);
+
+            if (!Number.isNaN(angle)) {
+                setLifterDisplay(angle);
+            }
+        }
     }
 }
 
@@ -166,18 +191,23 @@ function pad3(value) {
     return String(value).padStart(3, "0");
 }
 
+function setLifterDisplay(displayValue) {
+
+    displayValue = Math.max(0, Math.min(LIFTER_MAX, Math.round(displayValue)));
+
+    lifterSlider.value = displayValue;
+    lifterValue.textContent = displayValue + "\u00B0";
+}
+
 // Heber setzen, anzeigen und senden.
 // displayValue = das, was der Nutzer sieht (0..LIFTER_MAX).
 // Der echte Servo-Winkel ist gedreht: servo = LIFTER_MAX - displayValue.
 function updateLifter(displayValue) {
 
-    // Wert in gueltigen Bereich klemmen (0..110)
     displayValue = Math.max(0, Math.min(LIFTER_MAX, Math.round(displayValue)));
 
-    lifterSlider.value = displayValue;
-    lifterValue.textContent = displayValue + "\u00B0"; // Grad-Zeichen
+    setLifterDisplay(displayValue);
 
-    // Anzeige umdrehen -> echter Servo-Winkel, Format "c" + 3 Ziffern
     const servo = LIFTER_MAX - displayValue;
     send("c" + pad3(servo));
 }
