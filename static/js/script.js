@@ -1,6 +1,7 @@
 // Elemente & Konstanten
 let rxCharacteristic = null;
 let txCharacteristic = null;
+let bluetoothDevice = null;
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -13,8 +14,15 @@ const lifterValue = document.getElementById("lifterValue");
 // Groesster erlaubter Anzeige-/Servo-Wert
 const LIFTER_MAX = 110;
 
-// Schrittweite fuer die Pfeile (in Grad)
+// Schrittweite fuer die Pfeile in Grad
 const LIFTER_STEP = 10;
+
+// Letzter bekannter Anzeige-Wert der Website
+let currentLifterDisplayValue = Number(localStorage.getItem("lastLifterDisplayValue")) || 0;
+
+// Empfangspuffer fuer Bluetooth-Nachrichten
+let receiveBuffer = "";
+
 // Fahrbuttons: welcher Button sendet welchen Befehl
 const driveMap = {
     upBtn:    { press: "UP",    release: "up"    },
@@ -29,7 +37,6 @@ const driveMap = {
 async function connectBluetooth() {
 
     try {
-
         const serviceUuid = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
 
         const rxUuid = "6e400002-b5a3-f393-e0a9-e50e24dcca9e"; // Webseite sendet an Calliope
@@ -37,14 +44,16 @@ async function connectBluetooth() {
 
         statusBox.textContent = "Verbinde...";
 
-        const device = await navigator.bluetooth.requestDevice({
+        bluetoothDevice = await navigator.bluetooth.requestDevice({
             filters: [{
                 namePrefix: "Calliope"
             }],
             optionalServices: [serviceUuid]
         });
 
-        const server = await device.gatt.connect();
+        bluetoothDevice.addEventListener("gattserverdisconnected", handleDisconnect);
+
+        const server = await bluetoothDevice.gatt.connect();
         const service = await server.getPrimaryService(serviceUuid);
 
         rxCharacteristic = await service.getCharacteristic(rxUuid);
@@ -59,6 +68,10 @@ async function connectBluetooth() {
 
         statusBox.textContent = "Verbunden";
 
+        // Website zeigt erstmal den letzten bekannten Wert an
+        setLifterDisplay(currentLifterDisplayValue);
+
+        // Danach Calliope aktiv nach seinem aktuellen Wert fragen
         await send("GETLIFTER");
 
     } catch (error) {
@@ -67,10 +80,19 @@ async function connectBluetooth() {
     }
 }
 
+function handleDisconnect() {
+    statusBox.textContent = "Getrennt";
+
+    rxCharacteristic = null;
+    txCharacteristic = null;
+}
+
+
 // Befehl senden
 async function send(command) {
 
     if (!rxCharacteristic) {
+        console.warn("Nicht verbunden. Befehl nicht gesendet:", command);
         return;
     }
 
@@ -84,47 +106,81 @@ async function send(command) {
     }
 }
 
+
+// Daten vom Calliope empfangen
 function handleReceivedData(event) {
 
-    const text = decoder.decode(event.target.value).trim();
+    const receivedText = decoder.decode(event.target.value);
 
-    console.log("Vom Calliope empfangen:", text);
+    receiveBuffer += receivedText;
 
-    const messages = text.split("\n");
+    const messages = receiveBuffer.split("\n");
 
-    for (const message of messages) {
+    // Letzten Teil behalten, falls die Nachricht unvollstaendig angekommen ist
+    receiveBuffer = messages.pop();
 
-        if (message.startsWith("LIFTER:")) {
+    for (const rawMessage of messages) {
 
-            const angleText = message.replace("LIFTER:", "");
-            const angle = Number(angleText);
+        const message = rawMessage.trim();
 
-            if (!Number.isNaN(angle)) {
-                setLifterDisplay(angle);
-            }
+        if (message === "") {
+            continue;
         }
+
+        console.log("Vom Calliope empfangen:", message);
+
+        handleCalliopeMessage(message);
     }
 }
+
+
+// Einzelne Calliope-Nachricht auswerten
+function handleCalliopeMessage(message) {
+
+    if (message.startsWith("LIFTER:")) {
+
+        const valueText = message.replace("LIFTER:", "").trim();
+        const servoValue = Number(valueText);
+
+        if (Number.isNaN(servoValue)) {
+            console.warn("Ungueltiger Lifter-Wert empfangen:", message);
+            return;
+        }
+
+        // Wichtig:
+        // Die Website sendet an den Servo gespiegelt:
+        // displayValue -> servoValue = LIFTER_MAX - displayValue
+        //
+        // Deshalb muss beim Empfangen zur Anzeige zurueckgerechnet werden:
+        // servoValue -> displayValue = LIFTER_MAX - servoValue
+
+        const displayValue = LIFTER_MAX - servoValue;
+
+        setLifterDisplay(displayValue);
+
+        console.log("Lifter aktualisiert. Servo:", servoValue, "Anzeige:", displayValue);
+    }
+}
+
 
 document
     .getElementById("connectBtn")
     .addEventListener("click", connectBluetooth);
 
 
-
-// Fahren starten (Button optisch aktiv, "press" senden)
-// das active tag ist einfach dafür da das während der knopf gedürckt wird der button kleiner bleibt
-// er holt sich aus der drive map den passenden befehl
+// Fahren starten
 function driveStart(id) {
     document.getElementById(id).classList.add("active");
     send(driveMap[id].press);
 }
 
-// Fahren stoppen (Button optisch normal, "release" senden)
+
+// Fahren stoppen
 function driveStop(id) {
     document.getElementById(id).classList.remove("active");
     send(driveMap[id].release);
 }
+
 
 // Maus/Touch an einen Fahrbutton binden
 function bindDriveButton(id) {
@@ -134,13 +190,16 @@ function bindDriveButton(id) {
     button.addEventListener("pointerdown", () => driveStart(id));
     button.addEventListener("pointerup", () => driveStop(id));
     button.addEventListener("pointerleave", () => driveStop(id));
+    button.addEventListener("pointercancel", () => driveStop(id));
 }
+
 
 for (const id of Object.keys(driveMap)) {
     bindDriveButton(id);
 }
 
-// Selbstfahren (Umschalter)
+
+// Selbstfahren
 
 let selfDriveOn = false;
 
@@ -169,12 +228,14 @@ function flashButton(id) {
     setTimeout(() => button.classList.remove("active"), 120);
 }
 
+
 document
     .getElementById("turtleBtn")
     .addEventListener("click", () => {
         send("SCHILDKROETE");
         flashButton("turtleBtn");
     });
+
 
 document
     .getElementById("rabbitBtn")
@@ -184,50 +245,71 @@ document
     });
 
 
-// Heber (Slider & Pfeile)
+// Heber
 
-// Zahl auf 3 Stellen mit fuehrenden Nullen bringen (z. B. 90 -> "090")
+// Zahl auf 3 Stellen mit fuehrenden Nullen bringen, z. B. 90 -> "090"
 function pad3(value) {
     return String(value).padStart(3, "0");
 }
 
-function setLifterDisplay(displayValue) {
 
-    displayValue = Math.max(0, Math.min(LIFTER_MAX, Math.round(displayValue)));
-
-    lifterSlider.value = displayValue;
-    lifterValue.textContent = displayValue + "\u00B0";
+// Wert begrenzen
+function clampLifterValue(value) {
+    return Math.max(0, Math.min(LIFTER_MAX, Math.round(value)));
 }
 
-// Heber setzen, anzeigen und senden.
-// displayValue = das, was der Nutzer sieht (0..LIFTER_MAX).
-// Der echte Servo-Winkel ist gedreht: servo = LIFTER_MAX - displayValue.
+
+// Nur Website-Anzeige aktualisieren, nichts senden
+function setLifterDisplay(displayValue) {
+
+    displayValue = clampLifterValue(displayValue);
+
+    currentLifterDisplayValue = displayValue;
+
+    localStorage.setItem("lastLifterDisplayValue", String(displayValue));
+
+    lifterSlider.value = displayValue;
+    lifterValue.textContent = displayValue + "°";
+}
+
+
+// Heber setzen, anzeigen und an Calliope senden
 function updateLifter(displayValue) {
 
-    displayValue = Math.max(0, Math.min(LIFTER_MAX, Math.round(displayValue)));
+    displayValue = clampLifterValue(displayValue);
 
     setLifterDisplay(displayValue);
 
-    const servo = LIFTER_MAX - displayValue;
-    send("c" + pad3(servo));
+    // Anzeige-Wert in echten Servo-Wert umrechnen
+    const servoValue = LIFTER_MAX - displayValue;
+
+    send("c" + pad3(servoValue));
 }
 
-// Heber um einen Schritt bewegen (positiv = hoch, negativ = runter)
+
+// Heber um einen Schritt bewegen
 function moveLifter(step) {
     updateLifter(Number(lifterSlider.value) + step);
 }
 
-// Slider: sendet live den Wert
+
+// Slider sendet live den Wert
 lifterSlider.addEventListener("input", () => {
     updateLifter(Number(lifterSlider.value));
 });
+
 
 // Pfeil hoch -> Heber hoch
 document
     .getElementById("lifterUpBtn")
     .addEventListener("click", () => moveLifter(LIFTER_STEP));
 
+
 // Pfeil runter -> Heber runter
 document
     .getElementById("lifterDownBtn")
     .addEventListener("click", () => moveLifter(-LIFTER_STEP));
+
+
+// Startwert auf der Website setzen
+setLifterDisplay(currentLifterDisplayValue);
