@@ -71,8 +71,9 @@ async function send(command) {
         return;
     }
 
-    try {
+    try {// Befehle werden in Bytes umgewandelt
         const data = new TextEncoder().encode(command + "\n");
+        //Sendet Bytes ohne auf Bestätigung zu warten
         await rxCharacteristic.writeValueWithoutResponse(data);
 
     } catch (error) {
