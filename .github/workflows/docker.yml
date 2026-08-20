@@ -40,8 +40,6 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/niklasgehlen/calliope:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   build-test:
     if: |
@@ -70,5 +68,3 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/niklasgehlen/calliope:test
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
