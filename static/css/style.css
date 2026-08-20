@@ -272,29 +272,6 @@ button.active {
     border: 3px solid #fff;
 }
 
-.lifter-slider::-moz-range-thumb {
-    width: 26px;
-    height: 26px;
-
-    border-radius: 50%;
-
-    background: var(--primary);
-
-    cursor: pointer;
-
-    border: 3px solid #fff;
-}
-
-.hint {
-    margin-top: clamp(10px, 1.5vh, 18px);
-
-    font-size: 13px;
-
-    text-align: center;
-
-    color: #d0d0d0;
-}
-
 /* ---- Kleine Hoehen: noch kompakter, damit nichts scrollt ---- */
 @media (max-height: 800px) {
     h1 {
