@@ -35,7 +35,7 @@ body {
 }
 
 .card {
-    width: min(420px, 100%);
+    width: clamp(420px, 50vw, 800px);
     height: min(800px, calc(100dvh - 20px));
 
     /* leicht durchscheinend, damit das Wallpaper dahinter wirkt */
